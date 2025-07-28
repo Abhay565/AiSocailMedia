@@ -20,7 +20,7 @@ const Home = () => {
 
       {/* Gradient behind status bar */}
       <LinearGradient
-        colors={["#4b6cb7", "#8e44ad"]}
+        colors={['#f12711', '#f0a912ff']} 
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
         style={styles.statusBarGradient}

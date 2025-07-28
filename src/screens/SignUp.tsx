@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { supabase } from "../lib/supabse";
+import ButtonColored from "../components/ButtonColored";
 
 export default function SignUp({ navigation }) {
   const [email, setEmail] = useState("");
@@ -41,7 +42,7 @@ export default function SignUp({ navigation }) {
             />
       
             <LinearGradient
-              colors={["#4b6cb7", "#8e44ad"]}
+              colors={['#f12711', '#f0a912ff']} 
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.statusBarGradient}
@@ -55,7 +56,7 @@ export default function SignUp({ navigation }) {
           contentContainerStyle={styles.container}
           keyboardShouldPersistTaps="handled"
         >
-          <Text style={styles.title}>Register</Text>
+          <Text style={styles.title}>Sign Up</Text>
 
           <TextInput
             placeholder="Email"
@@ -75,19 +76,7 @@ export default function SignUp({ navigation }) {
 
           {message && <Text style={styles.message}>{message}</Text>}
 
-          <TouchableOpacity
-            onPress={handleRegister}
-            style={styles.buttonWrapper}
-          >
-            <LinearGradient
-              colors={["#4b6cb7", "#8e44ad"]}
-              style={styles.button}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-            >
-              <Text style={styles.buttonText}>Register</Text>
-            </LinearGradient>
-          </TouchableOpacity>
+          <ButtonColored onPress={handleRegister} title={"Sign Up"} />
 
           <TouchableOpacity onPress={() => navigation.navigate("Login")}>
             <Text style={styles.linkText}>Already have an account? Login</Text>

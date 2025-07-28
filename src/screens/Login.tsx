@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { supabase } from "../lib/supabse";
+import ButtonColored from "../components/ButtonColored";
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
@@ -42,7 +43,7 @@ export default function Login({ navigation }) {
 
       {/* Gradient behind status bar */}
       <LinearGradient
-        colors={["#4b6cb7", "#8e44ad"]}
+        colors={['#f12711', '#f0a912ff']} 
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
         style={styles.statusBarGradient}
@@ -76,16 +77,8 @@ export default function Login({ navigation }) {
 
           {message && <Text style={styles.message}>{message}</Text>}
 
-          <TouchableOpacity onPress={handleLogin} style={styles.buttonWrapper}>
-            <LinearGradient
-              colors={["#4b6cb7", "#8e44ad"]}
-              style={styles.button}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-            >
-              <Text style={styles.buttonText}>Login</Text>
-            </LinearGradient>
-          </TouchableOpacity>
+        <ButtonColored onPress={handleLogin} title={"Login"} />
+
 
           <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
             <Text style={styles.linkText}>Don't have an account? Register</Text>
@@ -125,20 +118,6 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     backgroundColor: "#fff",
     color: "#333",
-  },
-  buttonWrapper: {
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  button: {
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 16,
   },
   message: {
     marginBottom: 15,
