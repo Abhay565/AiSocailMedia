@@ -14,6 +14,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { supabase } from "../lib/supabse";
 import ButtonColored from "../components/ButtonColored";
+import CustomStatusBar from "../components/CustomStatusBar";
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
@@ -26,28 +27,14 @@ export default function Login({ navigation }) {
       password,
     });
 
-    if (error) {
-      setMessage(error.message);
-    } else {
-      navigation.replace("Home");
+    if (!error) {
+      navigation.getState();
     }
   };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#f5f5f5" }}>
-      <StatusBar
-        barStyle="light-content"
-        backgroundColor="transparent"
-        translucent={true}
-      />
-
-      {/* Gradient behind status bar */}
-      <LinearGradient
-        colors={['#f12711', '#f0a912ff']} 
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        style={styles.statusBarGradient}
-      />
+      <CustomStatusBar gradientColors={["#f12711", "#f5af19"]} />
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -77,8 +64,7 @@ export default function Login({ navigation }) {
 
           {message && <Text style={styles.message}>{message}</Text>}
 
-        <ButtonColored onPress={handleLogin} title={"Login"} />
-
+          <ButtonColored onPress={handleLogin} title={"Login"} />
 
           <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
             <Text style={styles.linkText}>Don't have an account? Register</Text>
@@ -96,13 +82,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   statusBarGradient: {
-      position: "absolute",
-      top: 0,
-      left: 0,
-      right: 0,
-      height: Platform.OS === "ios" ? 44 : StatusBar.currentHeight, // height for iOS/Android
-      zIndex: 10,
-    },
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: Platform.OS === "ios" ? 44 : StatusBar.currentHeight, // height for iOS/Android
+    zIndex: 10,
+  },
   title: {
     fontSize: 26,
     fontWeight: "bold",

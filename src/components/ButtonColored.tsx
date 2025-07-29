@@ -1,16 +1,28 @@
-import { GestureResponderEvent, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  GestureResponderEvent,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from "react-native";
 import React from "react";
 import { LinearGradient } from "expo-linear-gradient";
 
 interface ButtonColoredProps {
   onPress: (event: GestureResponderEvent) => void;
-  title: String,
+  title: string;
+  width?: string | number; // width can be '100%' or numeric like 200
 }
 
-const ButtonColored: React.FC<ButtonColoredProps> = ({ onPress,title }) => {
+const ButtonColored: React.FC<ButtonColoredProps> = ({
+  onPress,
+  title,
+  width = "100%", // default value
+}) => {
   return (
-    <View>
-      <TouchableOpacity onPress={onPress} style={styles.buttonWrapper}>
+    <View style={[styles.buttonWrapper, { width }]}>
+      <TouchableOpacity onPress={onPress}>
         <LinearGradient
           colors={["#f12711", "#f5af19"]}
           style={styles.button}

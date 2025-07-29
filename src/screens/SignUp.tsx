@@ -14,6 +14,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { supabase } from "../lib/supabse";
 import ButtonColored from "../components/ButtonColored";
+import CustomStatusBar from "../components/CustomStatusBar";
 
 export default function SignUp({ navigation }) {
   const [email, setEmail] = useState("");
@@ -35,18 +36,8 @@ export default function SignUp({ navigation }) {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#f5f5f5" }}>
-       <StatusBar
-              barStyle="light-content"
-              backgroundColor="transparent"
-              translucent={true}
-            />
-      
-            <LinearGradient
-              colors={['#f12711','#f0a912ff']} 
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.statusBarGradient}
-            />
+      <CustomStatusBar gradientColors={["#f12711", "#f5af19"]} />
+
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
