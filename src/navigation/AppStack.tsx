@@ -2,16 +2,17 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import Ionicons from "react-native-vector-icons/Ionicons";
+
 import Home from "../screens/Home";
 import PostDetails from "../screens/PostDetails";
 import CreatePost from "../screens/CreatePost";
-import Ionicons from "react-native-vector-icons/Ionicons";
 import Profile from "../screens/Profile";
+import OurPost from "../screens/OurPost";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// 🧱 Home Stack Navigator (for nested navigation inside Home tab)
 const HomeStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -22,7 +23,6 @@ const HomeStack = () => {
   );
 };
 
-// 🧭 Main App Stack with Bottom Tabs
 const AppStack = () => {
   return (
     <Tab.Navigator
@@ -35,6 +35,8 @@ const AppStack = () => {
 
           if (route.name === "Home") {
             iconName = "home-outline";
+          } else if (route.name === "OurPost") {
+            iconName = "albums-outline"; // 🆕 Choose an icon you like
           } else if (route.name === "Profile") {
             iconName = "person-outline";
           }
@@ -44,6 +46,7 @@ const AppStack = () => {
       })}
     >
       <Tab.Screen name="Home" component={HomeStack} />
+      <Tab.Screen name="OurPost" component={OurPost} />
       <Tab.Screen name="Profile" component={Profile} />
     </Tab.Navigator>
   );

@@ -12,7 +12,7 @@ import {
   Image,
   ActivityIndicator,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import ButtonColored from "../components/ButtonColored";
 import CustomStatusBar from "../components/CustomStatusBar";
 
@@ -24,6 +24,7 @@ export default function Home() {
   const [commentInput, setCommentInput] = useState("");
   const [comments, setComments] = useState<{ [key: number]: string[] }>({});
   const navigation = useNavigation<any>();
+  const route = useRoute<any>();
 
   const fetchPosts = async () => {
     setLoading(true);
@@ -61,6 +62,21 @@ export default function Home() {
     fetchPosts();
     fetchAllComments();
   }, []);
+
+  // Add new post from navigation params if present
+  useEffect(() => {
+    if (route.params && route.params.newPost) {
+      setPosts((prev) => [
+        {
+          ...route.params.newPost,
+          image: `https://picsum.photos/seed/${route.params.newPost.id || Math.floor(Math.random()*10000)}/300/200`,
+          reactions: { likes: 0, dislikes: 0 },
+          tags: [],
+        },
+        ...prev,
+      ]);
+    }
+  }, [route.params?.newPost]);
 
   const [localReactions, setLocalReactions] = useState<{
     [key: number]: { likes: number; dislikes: number };
@@ -123,23 +139,26 @@ export default function Home() {
   };
 
   const submitComment = async () => {
-  if (currentPostId !== null && commentInput.trim() !== "") {
-    const { error } = await supabase.from("comments").insert([
-      {
-        post_id: currentPostId,
-        comment: commentInput.trim(),
-      },
-    ]);
-
-    if (error) {
-      console.error("Error inserting comment:", error);
-    } else {
-      fetchCommentsForPost(currentPostId); // refresh comments
-      setCommentInput("");
-      setCommentModalVisible(false);
+    if (currentPostId !== null && commentInput.trim() !== "") {
+      const { error } = await supabase.from("comments").insert([
+        {
+          post_id: currentPostId,
+          comment: commentInput.trim(),
+        },
+      ]);
+      if (error) {
+        console.error("Error inserting comment:", error);
+      } else {
+        // Update local state immediately for better UX
+        setComments((prev) => ({
+          ...prev,
+          [currentPostId]: [...(prev[currentPostId] || []), commentInput.trim()],
+        }));
+        setCommentInput("");
+        setCommentModalVisible(false);
+      }
     }
-  }
-};
+  };
 
 
   const PostCard = ({ item }: any) => {
@@ -255,7 +274,6 @@ export default function Home() {
         </>
       )}
 
-      {/* Comment Modal */}
       <Modal
         visible={commentModalVisible}
         animationType="slide"
