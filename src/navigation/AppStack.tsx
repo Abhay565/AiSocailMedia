@@ -1,20 +1,52 @@
 // src/navigation/AppStack.tsx
-import React from 'react'
-import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import Home from '../screens/Home'
-import PostDetails from '../screens/PostDetails'
-import CreatePost from '../screens/CreatePost'
+import React from "react";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import Home from "../screens/Home";
+import PostDetails from "../screens/PostDetails";
+import CreatePost from "../screens/CreatePost";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import Profile from "../screens/Profile";
 
-const Stack = createNativeStackNavigator()
+const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
 
-const AppStack = () => {
+// 🧱 Home Stack Navigator (for nested navigation inside Home tab)
+const HomeStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Home" component={Home} />
+      <Stack.Screen name="HomeScreen" component={Home} />
       <Stack.Screen name="PostDetails" component={PostDetails} />
       <Stack.Screen name="CreatePost" component={CreatePost} />
     </Stack.Navigator>
-  )
-}
+  );
+};
 
-export default AppStack
+// 🧭 Main App Stack with Bottom Tabs
+const AppStack = () => {
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        headerShown: false,
+        tabBarActiveTintColor: "#007bff",
+        tabBarInactiveTintColor: "gray",
+        tabBarIcon: ({ color, size }) => {
+          let iconName: string;
+
+          if (route.name === "Home") {
+            iconName = "home-outline";
+          } else if (route.name === "Profile") {
+            iconName = "person-outline";
+          }
+
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+      })}
+    >
+      <Tab.Screen name="Home" component={HomeStack} />
+      <Tab.Screen name="Profile" component={Profile} />
+    </Tab.Navigator>
+  );
+};
+
+export default AppStack;

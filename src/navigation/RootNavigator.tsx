@@ -35,17 +35,7 @@ const RootNavigator = () => {
 
   return (
      <NavigationContainer>
-    {session ? (
-      <>
-        {console.log("In AppStack")}
-        <AppStack />
-      </>
-    ) : (
-      <>
-        {console.log("In AuthStack")}
-        <AuthStack />
-      </>
-    )}
+    {session ? <AppStack /> : <AuthStack />}
   </NavigationContainer>
   )
 }

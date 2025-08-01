@@ -17,8 +17,8 @@ import ButtonColored from "../components/ButtonColored";
 import CustomStatusBar from "../components/CustomStatusBar";
 
 export default function Login({ navigation }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("abhay@yopmail.com");
+  const [password, setPassword] = useState("123456");
   const [message, setMessage] = useState("");
 
   const handleLogin = async () => {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { supabase } from '../lib/supabse';
+import { supabase } from "../lib/supabse";
 import { Modal, TextInput, KeyboardAvoidingView, Platform } from "react-native";
 import {
   View,
@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import ButtonColored from "../components/ButtonColored";
+import CustomStatusBar from "../components/CustomStatusBar";
 
 export default function Home() {
   const [posts, setPosts] = useState<any[]>([]);
@@ -42,8 +43,23 @@ export default function Home() {
     }
   };
 
+  const fetchAllComments = async () => {
+  const { data, error } = await supabase.from("comments").select("*");
+
+  if (!error && data) {
+    const grouped: { [key: number]: string[] } = {};
+    data.forEach((c) => {
+      if (!grouped[c.post_id]) grouped[c.post_id] = [];
+      grouped[c.post_id].push(c.comment);
+    });
+    setComments(grouped);
+  }
+};
+
+
   useEffect(() => {
     fetchPosts();
+    fetchAllComments();
   }, []);
 
   const [localReactions, setLocalReactions] = useState<{
@@ -82,22 +98,49 @@ export default function Home() {
     }));
   };
 
+  const fetchCommentsForPost = async (postId: number) => {
+  const { data, error } = await supabase
+    .from("comments")
+    .select("*")
+    .eq("post_id", postId)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching comments:", error);
+  } else {
+    setComments((prev) => ({
+      ...prev,
+      [postId]: data.map((c) => c.comment),
+    }));
+  }
+};
+
   const openCommentModal = (postId: number) => {
     setCurrentPostId(postId);
     setCommentInput("");
     setCommentModalVisible(true);
+    fetchCommentsForPost(postId);
   };
 
-  const submitComment = () => {
-    if (currentPostId !== null && commentInput.trim() !== "") {
-      setComments((prev) => ({
-        ...prev,
-        [currentPostId]: [...(prev[currentPostId] || []), commentInput.trim()],
-      }));
+  const submitComment = async () => {
+  if (currentPostId !== null && commentInput.trim() !== "") {
+    const { error } = await supabase.from("comments").insert([
+      {
+        post_id: currentPostId,
+        comment: commentInput.trim(),
+      },
+    ]);
+
+    if (error) {
+      console.error("Error inserting comment:", error);
+    } else {
+      fetchCommentsForPost(currentPostId); // refresh comments
       setCommentInput("");
       setCommentModalVisible(false);
     }
-  };
+  }
+};
+
 
   const PostCard = ({ item }: any) => {
     const navigation = useNavigation<any>();
@@ -134,39 +177,23 @@ export default function Home() {
 
           <View style={styles.reactionRow}>
             <View style={styles.thumbCol}>
-              <View style={styles.reactionButton}>
-                <Text
-                  style={[
-                    styles.reactions,
-                    localReactions[item.id]?.liked && styles.likedCount,
-                  ]}
-                >
-                  {reactions.likes}
-                </Text>
-              </View>
               <TouchableOpacity
                 onPress={() => handleLike(item.id)}
+                style={styles.reactionButton}
               >
-                <Text
-                  style={[
-                    styles.thumbIcon,
-                    localReactions[item.id]?.liked && styles.likedThumb,
-                  ]}
-                >
-                  👍
-                </Text>
+                <Text style={[styles.thumbIcon]}>👍</Text>
               </TouchableOpacity>
+                <Text style={[styles.reactions]}>{reactions.likes}</Text>
+
             </View>
             <View style={styles.thumbCol}>
-              
-              <View style={styles.reactionButton}>
-                <Text style={styles.reactions}>{reactions.dislikes}</Text>
-              </View>
               <TouchableOpacity
                 onPress={() => handleDislike(item.id)}
+                style={styles.reactionButton}
               >
                 <Text style={styles.thumbIcon}>👎</Text>
               </TouchableOpacity>
+                <Text style={styles.reactions}>{reactions.dislikes}</Text>
             </View>
             <TouchableOpacity
               onPress={() => openCommentModal(item.id)}
@@ -195,6 +222,7 @@ export default function Home() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <CustomStatusBar />
       {loading ? (
         <ActivityIndicator
           size="large"
@@ -217,9 +245,12 @@ export default function Home() {
               No posts available
             </Text>
           )}
-          
+
           <View style={styles.createButton}>
-            <ButtonColored title={'+ New Post'}  onPress={()=>navigation.navigate("CreatePost")} />
+            <ButtonColored
+              title={"+ New Post"}
+              onPress={() => navigation.navigate("CreatePost")}
+            />
           </View>
         </>
       )}
@@ -276,7 +307,7 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
+  container: { flex: 1, backgroundColor: "#fff", paddingTop: 32 },
   card: {
     backgroundColor: "#f8f9fa",
     marginHorizontal: 16,
@@ -323,17 +354,22 @@ const styles = StyleSheet.create({
   },
   thumbCol: {
     alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
     marginRight: 10,
   },
   reactionButton: {
-    paddingHorizontal: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 4,
     paddingVertical: 10,
     borderRadius: 12,
-    backgroundColor: "#d9d9d9",
+    backgroundColor: "",
     marginBottom: 4,
   },
   thumbIcon: {
-    fontSize: 28,
+    fontSize: 24,
     textAlign: "center",
     marginBottom: 2,
     color: "#888",
